@@ -1,0 +1,8 @@
+
+
+/**
+ * @author Victor
+ */
+class EmptyProject {
+  
+}

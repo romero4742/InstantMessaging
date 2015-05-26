@@ -35,8 +35,10 @@ object ChatClient {
       val input = readLine
       if(input =="quit")
          flag = false
-      else
+      else{
         os.println(input)
+        os.flush()
+      }
     }
     sock.close()
     is.close()

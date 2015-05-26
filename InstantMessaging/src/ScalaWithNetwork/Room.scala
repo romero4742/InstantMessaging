@@ -12,8 +12,11 @@ class Room(val roomName: String, val admin: User) {
      for(temp <- sessions){
        if(temp.getUserId() == newUser.getUserId()){
          newUser.ps.println("User already in this lobby")
+         newUser.ps.flush()
        }
      }
+     newUser.ps.println(newUser.name + " joining room " + roomName)
+     newUser.ps.flush()
      sessions += newUser
    }
    

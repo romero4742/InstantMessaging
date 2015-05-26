@@ -25,12 +25,12 @@ object Lobby{
         //readline blocks thread, spawn new thread for client
         actors.Actor.actor{
           ps.println("what is your name: ")
+          ps.flush()
           val name = is.readLine()
           val newUser = new User(sock,is,ps,name)
           newUser.setRoom("MainLobby")
           users += newUser
           println("registered user " + newUser.name)
-          newUser.ps.println("Enter \\help for options")
           mainLobby.joinRoom(newUser)
         }
       }
@@ -40,6 +40,8 @@ object Lobby{
     while(true){
       for(user <- users){
         if(user.is.ready()){
+          user.ps.println("Enter: ")
+          user.ps.flush()
           val input = user.is.readLine()
           var temp = (input.split(" "))
           var opt = temp(0)
@@ -47,15 +49,48 @@ object Lobby{
           if(temp.length > 1)
             opt2 = temp(1)
           opt match{
+            case "\\new" => createRoom(opt2, user)
             case "\\help" => printCommands(user.ps)
             case "\\join" => joinRoom(user, opt2)
             case "\\leave"=> leaveRoom(user)
             case "\\exit" => exit(user)
             case "\\users" => printSessions(user)
+            case "\\list" => printRooms(user)
+            case _ => mainLobbyMessage(input, user)
           }
+          
+          
         }
       }
     }
+  }
+  
+  def printRooms(user: User){
+    user.ps.println("Rooms available")
+    user.ps.println(mainLobby.roomName)
+    for(room <- rooms){
+      user.ps.println(room.roomName)
+    }
+  }
+  
+  def createRoom(roomName: String, user: User){
+    mainLobby.leaveRoom(user)
+    val newRoom = new Room(roomName,user)
+    newRoom.joinRoom(user)
+    rooms += newRoom
+    user.setRoom(roomName)
+  }
+  
+  def mainLobbyMessage(input: String, user: User){
+    //get the user's room
+    if(user.name == "MainLobby"){
+       mainLobby.roomMessage(input, user.name)
+    } else {
+       for(room <- rooms){
+          if(room.roomName == user.getRoom())
+             room.roomMessage(input, user.name)
+          }
+       }
   }
   
   def printSessions(usr: User){
@@ -119,7 +154,8 @@ object Lobby{
   
   def printCommands(tempPS: PrintStream){
     tempPS.println("Printing available commands: "+
-                  "\n\\help \n\\join \n\\leave \n\\exit \n\\users")
+                  "\n\\help \n\\join \n\\leave \n\\exit"+
+                  " \n\\users\n\\new \"roomName \n\\list")
   }
   
 }

@@ -6,24 +6,22 @@ import java.io._
 class Room(val roomName: String, val admin: User) {
   
    private val sessions = new mutable.ArrayBuffer[User] with mutable.SynchronizedBuffer[User]
-   sessions += admin
    
    def joinRoom(newUser: User){
      for(temp <- sessions){
        if(temp.getUserId() == newUser.getUserId()){
-         newUser.ps.println("User already in this lobby")
+         newUser.ps.println("you are already in this room")
          newUser.ps.flush()
        }
      }
-     newUser.ps.println(newUser.name + " joining room " + roomName)
-     newUser.ps.flush()
+     roomMessage(newUser.name + " has joined the room","Console: ")
      sessions += newUser
    }
    
    def leaveRoom(user: User): Boolean = {
      var index = -1
      for(temp <- sessions){
-       if(temp.getUserId() == user.getUserId()){
+       if(temp != null && temp.getUserId() == user.getUserId()){
          sessions -= user
          true
        }
@@ -42,8 +40,9 @@ class Room(val roomName: String, val admin: User) {
    
    def roomMessage(message: String, sender: String){
      for(temp <- sessions){
-       if(temp.getUserId() != sender){
+       if(temp.name != sender){
          temp.ps.println(sender + ": " + message)
+         temp.ps.flush
        }
      }
    }

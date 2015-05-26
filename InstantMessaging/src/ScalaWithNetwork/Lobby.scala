@@ -40,8 +40,6 @@ object Lobby{
     while(true){
       for(user <- users){
         if(user.is.ready()){
-          user.ps.println("Enter: ")
-          user.ps.flush()
           val input = user.is.readLine()
           var temp = (input.split(" "))
           var opt = temp(0)
@@ -56,6 +54,7 @@ object Lobby{
             case "\\exit" => exit(user)
             case "\\users" => printSessions(user)
             case "\\list" => printRooms(user)
+            case "\\room" => user.ps.println("currently in " + user.getRoom())
             case _ => mainLobbyMessage(input, user)
           }
           
@@ -83,14 +82,15 @@ object Lobby{
   
   def mainLobbyMessage(input: String, user: User){
     //get the user's room
-    if(user.name == "MainLobby"){
+    if(user.getRoom() == "MainLobby"){
        mainLobby.roomMessage(input, user.name)
     } else {
        for(room <- rooms){
-          if(room.roomName == user.getRoom())
+          if(room.roomName == user.getRoom()){
              room.roomMessage(input, user.name)
           }
        }
+    }
   }
   
   def printSessions(usr: User){
@@ -102,7 +102,6 @@ object Lobby{
         room.printUsers(usr)
       }
     }
-    return
   }
   
   def joinRoom(usr: User, opt2: String){
@@ -150,12 +149,16 @@ object Lobby{
     tempUser.sock.close()
     tempUser.is.close()
     tempUser.ps.close()
+    println(tempUser.name + " has disconnected")
   }
   
   def printCommands(tempPS: PrintStream){
     tempPS.println("Printing available commands: "+
                   "\n\\help \n\\join \n\\leave \n\\exit"+
-                  " \n\\users\n\\new \"roomName \n\\list")
+                  " \n\\users\n\\new \"roomName\" \n\\list"+
+                  "\n\\room")
+                  
   }
+ 
   
 }

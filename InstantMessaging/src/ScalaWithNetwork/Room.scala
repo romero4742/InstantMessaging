@@ -40,10 +40,8 @@ class Room(val roomName: String, val admin: User) {
    
    def roomMessage(message: String, sender: String){
      for(temp <- sessions){
-       if(temp.name != sender){
          temp.ps.println(sender + ": " + message)
          temp.ps.flush
-       }
      }
    }
   

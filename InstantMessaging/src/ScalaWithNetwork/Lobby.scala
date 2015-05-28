@@ -146,7 +146,6 @@ object Lobby{
       leaveRoom(tempUser)
     }
     mainLobby.leaveRoom(tempUser)
-    tempUser.sock.close()
     tempUser.is.close()
     tempUser.ps.close()
     println(tempUser.name + " has disconnected")
